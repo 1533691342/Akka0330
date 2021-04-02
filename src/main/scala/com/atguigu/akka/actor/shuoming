@@ -1,0 +1,68 @@
+
+ 一、 Akka 中的 Actor 模型：
+ 1、处理冰法问题的关键是要保证共享数据的一致性和正确性，因为程序是多线程
+ 时，多个线程对同一个数据进行修改，若不加同步条件，势必会造成数据污染。
+ 但是当我们对关键代码加入同步条件 synchronized 后，实际上大并发就会阻塞
+ 这段代码，对程序效率有很大的影响
+ 2、若是用单线程处理，不会有数据一致性的问题，但是系统的性能又不能保证
+ 3、Actor 模型的出现解决了这个问题，简化并发编程，提升程序性能；
+ 即，Actor 模型是一种处理并发问题的解决方案
+
+ 二、Actor 模型及其说明：
+ 1、Akka处理并发的方法基于 Actor 模型
+ 2、在基于 Actor 的系统里，所有的事物都是 Actor，就好像在面向对象设计里
+ 所有的事物都是对象一样
+ 3、Actor 模型作为一个并发模型设计和架构的。 Actor 与 Actor 之间只能通过
+ 消息通信
+ 4、Actor 与 Actor 之间只能用消息进行通信，当一个 Actor 给另外一个 Actor
+ 发消息，消息是有顺序的，只需要将消息投寄到相应的邮箱即可
+ 5、怎么处理消息是由接受消息的 Actor 决定的，发送消息 Actor 可以等待回复，
+ 也可以异步处理
+ 6、ActorSystem 的职责是负责创建并管理其创建的 Actor， ActorSystem是
+ 单例的，一个JVM进程 中有一个即可，而 Actor 是可以有多个的
+ 7、Actor 模型是异步、非阻塞、高性能的事件驱动编程模型
+ 8、Actor 模型是轻量级事件处理（1GB内存可以容纳百万级别个 Actor），
+ 因此处理并发性能高
+
+ 三、Akka 介绍
+ 1、Akka 是Java 虚拟机IJV 平台上构建高并发、分布式和容错应用的工具包和运行
+ 时，可以理解为 Akka 是编写并发程序的框架
+ 2、Akka 用 scala 语言写成，同时提供了scala 和java 的开发接口
+ 3、Akka 主要解决的问题是：
+ 可以轻松的写出高效稳定的并发程序，不需要再过多的考虑线程、锁和
+ 资源竞争等细节
+
+ 四、Actor 模型用于解决的问题：
+ 1、处理并发问题关键是保证共享数据的一致性和正确性，因为程序是多线程时，
+ 多个线程对同一个数据进行修改，若不加同步条件，势必会造成数据污染。
+ 但是对关键代码加入同步条件 synchronized 后，实际上并发就会阻塞在这段
+ 代码，对程序效率有很大影响
+ 2、若是用单线程处理，不会有数据一致性的问题，但是系统饿的性能又不能保证
+ Actor 模型简化并发编程，提升性能
+
+ 五、Actor 模型工作机制说明：
+ 1、ActorSystem 创建 Actor
+ 2、ActorRef : 可以理解为 Actor 的代理或者引用。消息是通过 ActorRef 来
+ 发送，而不能通过 Actor 发送消息，通过哪个 ActorRef 发消息，就表示把消息
+ 发送个哪个 Actor
+ 3、消息发送到 Dispatcher Message(消息分发器)，得到消息后，会将消息进行
+ 分发到对应的 MailBox (注： Dispatcher Message 可以理解成是一个线程池，
+ MailBox 可以理解成是消息队列，可以缓冲多个消息，遵守FIFO(先进先出 ))
+ 4、Actor 可以通过 receive 方法来获取消息，进行处理
+
+ 六、Actor 间传递消息机制
+ 1、每个消息就是一个 Message 对象。Message 继承了 Runable ,因为 Message 就是线程类
+ 2、从 Actor 模型工作机制看上去很麻烦，但是编程时只需要编写 Actor 就可以了，其他的
+ 交给 Actor 模型就可以
+ 3、A Actor 要给 B Actor 发送消息，那么 A Actor要先拿到 B Actor 的代理对象 ActorRef
+ 才能发送消息
+
+
+六、ActorSystem 体系
+1、先创建 ActorSystem
+2、通过 ActorSystem 创建对应的 Actor/ ActorRef
+3、通过 ActorRef ！消息[这里表示将消息发送懂 ActorRef 对应的 Actor 的 MailBox]
+4、先将消息发送给 Dispatcher Message
+5、由 Dispatcher Message　将消息转发给对应的 Actor 的 MailBox
+6、当 Actor 的 MailBox 收到消息后，就会调用 Actor 的 receive 方法，把消息推送给 Actor
+7、如果希望得大回复消息通过 sender()! "消息"
